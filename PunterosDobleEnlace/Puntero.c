@@ -69,6 +69,7 @@ int extraer_lista(tNodo **lista) {
 	int valor;
 
 	valor = (*lista)->info;
+	(*lista)->next->prev = &lista;
 	*lista = (*lista)->next;
 
 	return valor;
@@ -87,12 +88,20 @@ int buscarDato(tNodo *lista, int dato) {
 tNodo *buscarElemento(tNodo *lista, int valor, int tipo) {
 	tNodo *localizado;
 	int encontrado = 0;
-
-	//-1 Elemento exacto que apunta al que busco
+	for (localizado = lista; localizado != NULL && encontrado != 1; localizado = localizado->next) {
+		if (tipo == 0 && localizado->info == valor) {
+			encontrado = 1;
+		}
+		else if (tipo == -1 && localizado->next->info == valor) {
+			encontrado = 1;
+		}
+	}
+	return localizado;
+	//-1 Elemento que apunta al que busco
 	// 0 Elemento que busco
 }
 
-void borrar_lista(tNodo **lista, int dato) {
+/*void borrar_lista(tNodo **lista, int dato) {
 	if (buscarDato(*lista, dato) != NULL) {
 		tNodo *p, *q, *aux;
 		aux = *lista;
@@ -106,12 +115,25 @@ void borrar_lista(tNodo **lista, int dato) {
 			}
 		}
 	}
-}
-
-/*void eliminarElemento(tNodo **lista, int dato) {
-anterior = buscar-1
-borrar = buscar0
 }*/
+
+void borrar_lista(tNodo **lista, int dato) {
+	tNodo *anterior, *borrar;
+	anterior = buscarElemento(lista, dato, -1);
+	borrar = buscarelemento(lista, dato, -1);
+
+	if (anterior != NULL) {
+		if (borrar != NULL) {
+			anterior->next = borrar->next;
+			borrar->next->prev = &anterior;
+		}
+		else {
+			(*lista)->next = anterior;
+			anterior->prev = *lista;
+		}
+	}
+	free(borrar);
+}
 
 void main() {
 
